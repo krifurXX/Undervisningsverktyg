@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALGORITMER & ANSVAR - Ersättningsuppgift VAI100</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #f1f5f9;
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 24px;
+            background: white;
+            min-height: 100vh;
+        }
+        .hidden { display: none !important; }
+        
+        /* Progress bar */
+        .progress-bar {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 20px;
+        }
+        .progress-step {
+            flex: 1;
+            height: 4px;
+            border-radius: 2px;
+            background: #e2e8f0;
+        }
+        .progress-step.active { background: #2563eb; }
+        
+        /* Typography */
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+            font-family: Georgia, serif;
+        }
+        h2 {
+            font-size: 22px;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 12px 0 8px 0;
+        }
+        h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 16px;
+        }
+        p { color: #64748b; }
+        
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .badge-blue { background: #dbeafe; color: #1e40af; }
+        .badge-green { background: #dcfce7; color: #166534; }
+        .badge-red { background: #fee2e2; color: #991b1b; }
+        .badge-yellow { background: #fef9c3; color: #854d0e; }
+        .badge-purple { background: #f3e8ff; color: #6b21a8; }
+        
+        .level-badge {
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+            color: white;
+        }
+        .level-grund { background: #3b82f6; }
+        .level-komplex { background: #f59e0b; }
+        .level-system { background: #dc2626; }
+        
+        /* Cards */
+        .card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .card:hover { border-color: #cbd5e1; }
+        .card.selected {
+            background: #eff6ff;
+            border: 2px solid #2563eb;
+        }
+        .card-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 0;
+        }
+        .card-desc {
+            color: #475569;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-top: 8px;
+        }
+        
+        /* Buttons */
+        .btn {
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+        .btn-primary:hover { background: #1d4ed8; }
+        .btn-primary:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
+        .btn-secondary {
+            background: white;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+        .btn-secondary:hover { background: #f9fafb; }
+        .btn-success {
+            background: #22c55e;
+            color: white;
+        }
+        .btn-success:hover { background: #16a34a; }
+        .btn-large {
+            padding: 14px 32px;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        /* Toggle buttons */
+        .toggle-btn {
+            background: white;
+            color: #374151;
+            border: 1px solid #d1d5db;
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin: 4px;
+        }
+        .toggle-btn.selected {
+            background: #22c55e;
+            color: white;
+            border-color: #22c55e;
+        }
+        .toggle-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .solution-btn {
+            background: white;
+            color: #374151;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin: 4px;
+        }
+        .solution-btn.selected {
+            background: #fbbf24;
+            color: #1e293b;
+            border-color: #fbbf24;
+        }
+        
+        /* Checkboxes */
+        .checkbox-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .checkbox-card.selected {
+            background: #fef2f2;
+            border: 2px solid #dc2626;
+        }
+        .checkbox-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            border: 2px solid #d1d5db;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .checkbox-card.selected .checkbox-box {
+            background: #dc2626;
+            border: none;
+        }
+        .checkbox-label strong {
+            display: block;
+            font-weight: 500;
+            color: #1e293b;
+            font-size: 14px;
+        }
+        .checkbox-label span {
+            color: #6b7280;
+            font-size: 12px;
+        }
+        
+        /* Forms */
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: vertical;
+            font-family: inherit;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+        .char-count {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-top: 4px;
+        }
+        
+        /* Info boxes */
+        .info-box {
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        .info-box-light {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+        }
+        .info-box-green {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+        }
+        .info-box-yellow {
+            background: #fef3c7;
+        }
+        .info-box-purple {
+            background: #faf5ff;
+            border: 1px solid #e9d5ff;
+        }
+        .info-box p { margin: 0; }
+        .info-box-green p { color: #15803d; }
+        .info-box-green strong { color: #166534; }
+        .info-box-yellow p { color: #92400e; font-size: 14px; }
+        .info-box-purple p { color: #7c3aed; font-size: 14px; }
+        .info-box-purple strong { color: #6b21a8; }
+        
+        /* Navigation */
+        .nav-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 32px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        /* Start page */
+        .start-page { text-align: center; padding: 20px; }
+        .start-icon { font-size: 64px; margin-bottom: 20px; }
+        .start-subtitle { font-size: 16px; color: #64748b; margin-bottom: 32px; }
+        .instructions-list {
+            color: #475569;
+            padding-left: 20px;
+            line-height: 1.8;
+            text-align: left;
+        }
+        .instructions-box {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            border: 1px solid #e2e8f0;
+            margin-top: 16px;
+        }
+        .instructions-box p {
+            font-weight: 500;
+            color: #334155;
+            margin-bottom: 8px;
+        }
+        
+        /* Summary */
+        .summary-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            max-height: 400px;
+            overflow: auto;
+        }
+        .summary-text {
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            color: #334155;
+            line-height: 1.6;
+        }
+        
+        /* Section headers */
+        .section-header {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .section-header-tech { color: #0369a1; }
+        .section-header-policy { color: #7c2d12; }
+        .section-header-social { color: #166534; }
+        
+        /* Utility */
+        .mb-16 { margin-bottom: 16px; }
+        .mb-24 { margin-bottom: 24px; }
+        .mt-8 { margin-top: 8px; }
+        .text-center { text-align: center; }
+        .flex-wrap { display: flex; flex-wrap: wrap; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Progress Bar -->
+        <div id="progressBar" class="progress-bar hidden">
+            <div class="progress-step" id="prog1"></div>
+            <div class="progress-step" id="prog2"></div>
+            <div class="progress-step" id="prog3"></div>
+            <div class="progress-step" id="prog4"></div>
+            <div class="progress-step" id="prog5"></div>
+        </div>
+
+        <!-- Step 0: Start -->
+        <div id="step0" class="start-page">
+            <div class="start-icon">🎴</div>
+            <h1>ALGORITMER &amp; ANSVAR</h1>
+            <p class="start-subtitle">Ett individuellt reflektionsverktyg för AI-etik</p>
+            
+            <div class="info-box info-box-light" style="text-align: left;">
+                <h3>Instruktioner</h3>
+                <p style="color: #475569; line-height: 1.7; margin-bottom: 16px;">
+                    Detta är en ersättningsuppgift för workshopmomentet med etikspelet. Du kommer att arbeta igenom samma reflektionsprocess som dina kurskamrater gjorde i grupp, men självständigt och dokumenterat.
+                </p>
+                <div class="instructions-box">
+                    <p>Du kommer att:</p>
+                    <ol class="instructions-list">
+                        <li>Välja ett etiskt dilemma (scenariokort)</li>
+                        <li>Analysera det från olika intressenters perspektiv</li>
+                        <li>Identifiera relevanta etikområden</li>
+                        <li>Föreslå möjliga lösningar</li>
+                        <li>Reflektera över dina insikter</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="info-box info-box-yellow">
+                <p><strong>Tips:</strong> Ta god tid på dig. Kvaliteten på din analys är viktigare än att gå snabbt igenom stegen. I slutet kan du kopiera din sammanfattning för inlämning.</p>
+            </div>
+
+            <button class="btn btn-primary btn-large" onclick="goToStep(1)">Starta uppgiften →</button>
+        </div>
+
+        <!-- Step 1: Scenario -->
+        <div id="step1" class="hidden">
+            <span class="badge badge-blue">STEG 1 av 5</span>
+            <h2>Välj ett scenario</h2>
+            <p class="mb-24">Läs igenom de olika scenarierna och välj ett som du vill analysera djupare.</p>
+            <div id="scenarioList"></div>
+        </div>
+
+        <!-- Step 2: Perspectives -->
+        <div id="step2" class="hidden">
+            <span class="badge badge-green">STEG 2 av 5</span>
+            <h2>Perspektivanalys</h2>
+            <p class="mb-24">Välj 2-3 perspektiv och analysera scenariot från varje intressents synvinkel.</p>
+            
+            <div class="info-box info-box-green mb-16">
+                <p><strong>Ditt scenario:</strong></p>
+                <p id="selectedScenarioTitle"></p>
+            </div>
+            
+            <p style="font-weight: 500; color: #334155; margin-bottom: 12px;">
+                Välj 2-3 perspektiv (<span id="perspectiveCount">0</span>/3 valda):
+            </p>
+            <div id="perspectiveButtons" class="flex-wrap mb-24"></div>
+            <div id="perspectiveInputs"></div>
+        </div>
+
+        <!-- Step 3: Ethics -->
+        <div id="step3" class="hidden">
+            <span class="badge badge-red">STEG 3 av 5</span>
+            <h2>Identifiera etikområden</h2>
+            <p class="mb-24">Vilka etiska aspekter är mest relevanta för detta scenario?</p>
+            
+            <p style="font-weight: 500; color: #334155; margin-bottom: 12px;">
+                Välj de etikområden du anser vara mest relevanta:
+            </p>
+            <div id="ethicsList" class="mb-24"></div>
+            
+            <div>
+                <label style="display: block; font-weight: 500; color: #1e293b; margin-bottom: 8px;">
+                    Motivera ditt val av etikområden:
+                </label>
+                <textarea id="ethicsMotivation" rows="4" placeholder="Förklara varför du valde dessa etikområden och hur de relaterar till scenariot..."></textarea>
+                <p class="char-count"><span id="ethicsCharCount">0</span> tecken (minst 30 krävs)</p>
+            </div>
+        </div>
+
+        <!-- Step 4: Solutions -->
+        <div id="step4" class="hidden">
+            <span class="badge badge-yellow">STEG 4 av 5</span>
+            <h2>Föreslå lösningar</h2>
+            <p class="mb-24">Välj 2-4 lösningar som du tror kan hantera de etiska problemen i scenariot.</p>
+            
+            <div class="mb-16">
+                <p class="section-header section-header-tech">⚙️ Tekniska lösningar</p>
+                <div id="techSolutions" class="flex-wrap"></div>
+            </div>
+            
+            <div class="mb-16">
+                <p class="section-header section-header-policy">📋 Policylösningar</p>
+                <div id="policySolutions" class="flex-wrap"></div>
+            </div>
+            
+            <div class="mb-16">
+                <p class="section-header section-header-social">👥 Sociala lösningar</p>
+                <div id="socialSolutions" class="flex-wrap"></div>
+            </div>
+            
+            <p style="font-size: 13px; color: #6b7280; margin-bottom: 16px;">
+                Valda lösningar: <span id="solutionCount">0</span>/4
+            </p>
+            
+            <div>
+                <label style="display: block; font-weight: 500; color: #1e293b; margin-bottom: 8px;">
+                    Motivera ditt val av lösningar:
+                </label>
+                <textarea id="solutionMotivation" rows="4" placeholder="Förklara hur dessa lösningar kan hantera de etiska problemen i scenariot. Vilka lösningar kompletterar varandra?"></textarea>
+                <p class="char-count"><span id="solutionCharCount">0</span> tecken (minst 30 krävs)</p>
+            </div>
+        </div>
+
+        <!-- Step 5: Reflection -->
+        <div id="step5" class="hidden">
+            <span class="badge badge-purple">STEG 5 av 5</span>
+            <h2>Slutreflektion</h2>
+            <p class="mb-24">Sammanfatta dina viktigaste insikter från denna analys.</p>
+            
+            <div class="info-box info-box-purple mb-16">
+                <p><strong>Reflektera över:</strong></p>
+                <ul style="padding-left: 20px; margin-top: 8px; line-height: 1.8;">
+                    <li>Vilka intressekonflikter upptäckte du mellan olika perspektiv?</li>
+                    <li>Hur hänger de etiska problemen ihop med varandra?</li>
+                    <li>Vilka utmaningar finns med de lösningar du föreslagit?</li>
+                    <li>Vad tar du med dig från denna analys?</li>
+                </ul>
+            </div>
+            
+            <div>
+                <textarea id="reflection" rows="8" placeholder="Skriv din reflektion här..."></textarea>
+                <p class="char-count"><span id="reflectionCharCount">0</span> tecken (minst 50 krävs)</p>
+            </div>
+        </div>
+
+        <!-- Step 6: Summary -->
+        <div id="step6" class="hidden text-center">
+            <div style="font-size: 48px; margin-bottom: 16px;">✅</div>
+            <h2>Uppgiften är klar!</h2>
+            <p class="mb-24">Nedan ser du en sammanfattning av din analys. Kopiera texten och lämna in enligt kursens instruktioner.</p>
+            
+            <div class="summary-box" style="text-align: left;">
+                <pre class="summary-text" id="summaryText"></pre>
+            </div>
+            
+            <button class="btn btn-success btn-large" onclick="copyToClipboard()" id="copyBtn">📋 Kopiera till urklipp</button>
+            <button class="btn btn-secondary btn-large" onclick="restart()" style="margin-left: 12px;">Börja om</button>
+        </div>
+
+        <!-- Navigation -->
+        <div id="navBar" class="nav-bar hidden">
+            <button class="btn btn-secondary" onclick="prevStep()">← Tillbaka</button>
+            <button class="btn btn-primary" onclick="nextStep()" id="nextBtn">Nästa →</button>
+        </div>
+    </div>
+
+    <script>
+        // Data
+        const scenarios = [
+            { id: 1, level: 'Grundläggande', title: 'Bias i ansökningsprocesser', description: 'En stor högskola använder AI för att sortera tusentals ansökningar. Systemet har tränats på historiska data från tidigare antagna studenter. Efter ett år upptäcker skolan att AI:n systematiskt rangordnar kvinnliga sökande lägre inom tekniska program, trots lika meriter.' },
+            { id: 2, level: 'Grundläggande', title: 'Miljöpåverkan av AI-träning', description: 'Ett tech-företag tränar en ny språkmodell som konkurrerar med ChatGPT. Träningsprocessen kräver enorma datorcenter som drivs dygnet runt i sex månader och förbrukar lika mycket el som en mindre stad. Samtidigt marknadsför företaget sig som "miljövänligt".' },
+            { id: 3, level: 'Grundläggande', title: 'AI-genererade fejknyheter', description: 'En AI-bot skapar hundratals falska nyhetsartiklar om en pandemi och sprider dem på Facebook. Artiklarna ser professionella ut med påhittade experter och statistik. Tusentals människor delar innehållet innan plattformen upptäcker bedrägeriet.' },
+            { id: 4, level: 'Grundläggande', title: 'Fusk med ChatGPT i skolan', description: 'Emma ska skriva en uppsats om klimatförändringar. Hon använder ChatGPT för att generera hela texten, ändrar några meningar och lämnar in som sitt eget arbete. Hennes lärare misstänker inget, men Emma känner sig osäker på vad hon faktiskt lärt sig.' },
+            { id: 5, level: 'Grundläggande', title: 'Ansiktsigenkänning i skolor', description: 'En skola installerar kameror med ansiktsigenkänning för att "förbättra säkerheten". Systemet registrerar varje elevs ankomst, rörelser i korridorerna och känslouttryck under lektioner. Föräldrarna fick ingen information om systemet förrän efter installationen.' },
+            { id: 6, level: 'Komplex', title: 'Datafiering av utbildning', description: 'En lärplattform samlar in detaljerad data om alla elevinteraktioner: vilka sidor de besöker, hur länge de läser, när de pausar, vad de klickar på. Datan säljs till företag som utvecklar "personaliserade" läromedel. Eleverna vet inte att deras beteende kartläggs och säljs.' },
+            { id: 7, level: 'Komplex', title: 'Övervakning genom affektigenkänning', description: 'En arbetsplats installerar kameror som läser anställdas ansiktsuttryck för att mäta "engagemang" och "produktivitet". AI:n flaggar medarbetare som verkar stressade, trötta eller missnöjda. Denna data används vid löneförhandlingar och uppsägningar.' },
+            { id: 8, level: 'Komplex', title: 'Politisk manipulation genom deepfakes', description: 'Veckor före ett viktigt val sprids en video på sociala medier som visar en kandidat säga kontroversiella saker. Videon är så övertygande att den delas tusentals gånger innan det avslöjas att det är en AI-genererad deepfake. Skadan på kandidatens rykte är redan skedd.' },
+            { id: 9, level: 'Komplex', title: 'Upphovsrättstvister vid AI-träning', description: 'Ett AI-företag tränar sin bildgenererande AI på miljontals konstverk från internet utan att fråga konstnärerna. När AI:n börjar generera bilder "i stil med" levande konstnärer stämmer konstnärerna företaget. Företaget hävdar att AI:n bara "lärt sig" som en människa skulle göra.' },
+            { id: 10, level: 'Systemisk', title: 'Exploatering av mänskligt arbete', description: 'För att träna ChatGPT att vara "säker" anställer OpenAI arbetare i Kenya för 2 dollar/timme. De måste läsa och kategorisera extremt våldsamt och traumatiserande innehåll 8 timmar om dagen utan psykologiskt stöd. Företaget marknadsför sin AI som "etisk" medan de utnyttjar billig arbetskraft.' },
+            { id: 11, level: 'Systemisk', title: 'Framtiden för mänsklig autonomi', description: 'AI-system fattar allt fler beslut åt människor: vad vi ska köpa, vem vi ska träffa, vilka jobb vi ska söka, vilken information vi ska se. Algoritmerna blir så sofistikerade att de vet vad vi vill innan vi själva vet det. Har vi fortfarande fri vilja när AI styr våra val?' },
+            { id: 12, level: 'Systemisk', title: 'AI som verktyg för förtryck', description: 'En regering använder AI för massövervakning av sin befolkning. Systemet känner igen ansikten, röster och rörelsemönster. Det förutsäger vilka medborgare som kan bli "problematiska" och arresterar dem före eventuella protester. Regeringen kallar det "förebyggande säkerhet".' }
+        ];
+
+        const perspectives = [
+            { id: 1, name: 'Studerande', description: 'En person som utbildar sig och påverkas av AI i sin vardag och framtida karriär' },
+            { id: 2, name: 'Lärare', description: 'En utbildare som använder och konfronteras med AI i undervisningen' },
+            { id: 3, name: 'Utvecklare', description: 'En programmerare som skapar AI-system och fattar tekniska beslut' },
+            { id: 4, name: 'Företagsledare', description: 'En beslutsfattare som väger ekonomiska intressen mot etiska överväganden' },
+            { id: 5, name: 'Politiker', description: 'En beslutsfattare som ska reglera och styra AI-utvecklingen' },
+            { id: 6, name: 'Förälder', description: 'En vårdnadshavare som oroar sig för sina barns framtid och säkerhet' },
+            { id: 7, name: 'Konsument', description: 'En användare av AI-tjänster som påverkas av algoritmernas beslut' },
+            { id: 8, name: 'Forskare', description: 'En akademiker som studerar AI:s konsekvenser och möjligheter' },
+            { id: 9, name: 'Journalist', description: 'En granskare som rapporterar om AI:s påverkan på samhället' },
+            { id: 10, name: 'Aktivist', description: 'En samhällsengagerad person som kämpar för rättvis AI' }
+        ];
+
+        const ethicsAreas = [
+            { id: 1, name: 'Bias och diskriminering', description: 'AI-system kan förstärka och sprida orättvisor baserat på kön, etnicitet, ålder etc.' },
+            { id: 2, name: 'Miljöpåverkan', description: 'AI-träning och drift kräver enorma mängder energi och resurser' },
+            { id: 3, name: 'Fejknyheter och desinformation', description: 'AI kan skapa och sprida falsk information i stor skala' },
+            { id: 4, name: 'Akademisk hederlighet', description: 'AI utmanar traditionella syner på lärande, originalitet och examination' },
+            { id: 5, name: 'Upphovsrätt', description: 'Vem äger AI-genererat innehåll? Hur hanteras träningsdata?' },
+            { id: 6, name: 'Integritet', description: 'AI-system samlar och analyserar personlig data i stor utsträckning' },
+            { id: 7, name: 'Datafiering', description: 'Att göra allt till mätbar data, även mänskliga beteenden och relationer' },
+            { id: 8, name: 'Affektigenkänning', description: 'AI som läser och tolkar mänskliga känslor och ansiktsuttryck' },
+            { id: 9, name: 'Mänskligt arbete', description: 'AI:s påverkan på jobb, arbetsvillkor och exploatering av arbetare' },
+            { id: 10, name: 'Makt och kontroll', description: 'Vem har makten över AI-system och vem påverkas av dem?' }
+        ];
+
+        const solutions = {
+            technical: [
+                { id: 1, name: 'Transparenta AI-algoritmer', description: 'Förklara hur AI fattar beslut' },
+                { id: 2, name: 'Diversifierade träningsdata', description: 'Inkludera fler perspektiv i data' },
+                { id: 3, name: 'Kryptering och datasäkerhet', description: 'Skydda personlig information' },
+                { id: 4, name: 'Användarkontroll över automation', description: 'Låt människor välja när AI används' },
+                { id: 5, name: 'Bias-detektering', description: 'Testa AI-system för orättvisor' },
+                { id: 6, name: 'Energieffektiv AI', description: 'Minska miljöpåverkan av datorcenter' },
+                { id: 7, name: 'Öppen källkod', description: 'Dela AI-kod för granskning' },
+                { id: 8, name: 'Människor-i-loopen design', description: 'Håll människor i besluten' }
+            ],
+            policy: [
+                { id: 9, name: 'Regeringsreglering', description: 'Lagar som styr AI-användning' },
+                { id: 10, name: 'Branschstandarder', description: 'Företag enas om etiska regler' },
+                { id: 11, name: 'Etiska riktlinjer', description: 'Vägledning för ansvarsfull utveckling' },
+                { id: 12, name: 'Konsumentskydd', description: 'Lagar som skyddar användare' },
+                { id: 13, name: 'Transparenskrav', description: 'Krav på öppenhet om AI-system' },
+                { id: 14, name: 'Dataskyddslagar', description: 'Regler för personuppgifter' },
+                { id: 15, name: 'AI-auditering', description: 'Oberoende granskning av AI-system' },
+                { id: 16, name: 'Internationella avtal', description: 'Globalt samarbete om AI-etik' }
+            ],
+            social: [
+                { id: 17, name: 'Utbildning och medvetenhet', description: 'Lär människor om AI:s påverkan' },
+                { id: 18, name: 'Offentlig debatt', description: 'Diskutera AI:s roll i samhället' },
+                { id: 19, name: 'Aktivism och påtryckningar', description: 'Organisera för förändring' },
+                { id: 20, name: 'Etisk design-principer', description: 'Bygga värderingar i utvecklingen' },
+                { id: 21, name: 'Mångfald i utvecklingsteam', description: 'Olika perspektiv skapar bättre AI' },
+                { id: 22, name: 'Community-engagement', description: 'Involvera berörda grupper' },
+                { id: 23, name: 'Mediekritik', description: 'Granska AI-företags påståenden' },
+                { id: 24, name: 'Kollektiv handling', description: 'Gemensam kamp för rättvis AI' }
+            ]
+        };
+
+        // State
+        let currentStep = 0;
+        let selectedScenario = null;
+        let selectedPerspectives = [];
+        let perspectiveAnalysis = {};
+        let selectedEthics = [];
+        let selectedSolutions = [];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            renderScenarios();
+            renderPerspectiveButtons();
+            renderEthicsList();
+            renderSolutions();
+            setupTextareaListeners();
+        });
+
+        function renderScenarios() {
+            const container = document.getElementById('scenarioList');
+            container.innerHTML = scenarios.map(s => {
+                const levelClass = s.level === 'Grundläggande' ? 'level-grund' : 
+                                   s.level === 'Komplex' ? 'level-komplex' : 'level-system';
+                return `
+                    <div class="card" id="scenario-${s.id}" onclick="selectScenario(${s.id})">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                            <span class="level-badge ${levelClass}">${s.level}</span>
+                            <p class="card-title">${s.title}</p>
+                        </div>
+                        <p class="card-desc">${s.description}</p>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function selectScenario(id) {
+            selectedScenario = scenarios.find(s => s.id === id);
+            document.querySelectorAll('#scenarioList .card').forEach(c => c.classList.remove('selected'));
+            document.getElementById('scenario-' + id).classList.add('selected');
+            updateNavButton();
+        }
+
+        function renderPerspectiveButtons() {
+            const container = document.getElementById('perspectiveButtons');
+            container.innerHTML = perspectives.map(p => 
+                `<button class="toggle-btn" id="persp-btn-${p.id}" onclick="togglePerspective(${p.id})">${p.name}</button>`
+            ).join('');
+        }
+
+        function togglePerspective(id) {
+            const idx = selectedPerspectives.findIndex(p => p.id === id);
+            if (idx > -1) {
+                selectedPerspectives.splice(idx, 1);
+                delete perspectiveAnalysis[id];
+            } else if (selectedPerspectives.length < 3) {
+                selectedPerspectives.push(perspectives.find(p => p.id === id));
+            }
+            updatePerspectiveUI();
+            updateNavButton();
+        }
+
+        function updatePerspectiveUI() {
+            document.getElementById('perspectiveCount').textContent = selectedPerspectives.length;
+            
+            perspectives.forEach(p => {
+                const btn = document.getElementById('persp-btn-' + p.id);
+                const isSelected = selectedPerspectives.find(sp => sp.id === p.id);
+                btn.classList.toggle('selected', isSelected);
+                btn.disabled = !isSelected && selectedPerspectives.length >= 3;
+            });
+            
+            const inputsContainer = document.getElementById('perspectiveInputs');
+            inputsContainer.innerHTML = selectedPerspectives.map(p => `
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; font-weight: 500; color: #1e293b; margin-bottom: 8px;">
+                        ${p.name}: ${p.description}
+                    </label>
+                    <textarea id="persp-analysis-${p.id}" rows="4" 
+                        placeholder="Hur ser ${p.name.toLowerCase()} på detta scenario? Vilka intressen har de? Hur påverkas de?"
+                        oninput="updatePerspectiveAnalysis(${p.id}, this.value)">${perspectiveAnalysis[p.id] || ''}</textarea>
+                    <p class="char-count"><span id="persp-count-${p.id}">${(perspectiveAnalysis[p.id] || '').length}</span> tecken (minst 20 krävs)</p>
+                </div>
+            `).join('');
+        }
+
+        function updatePerspectiveAnalysis(id, value) {
+            perspectiveAnalysis[id] = value;
+            document.getElementById('persp-count-' + id).textContent = value.length;
+            updateNavButton();
+        }
+
+        function renderEthicsList() {
+            const container = document.getElementById('ethicsList');
+            container.innerHTML = ethicsAreas.map(e => `
+                <div class="checkbox-card" id="ethics-${e.id}" onclick="toggleEthics(${e.id})">
+                    <div class="checkbox-box"></div>
+                    <div class="checkbox-label">
+                        <strong>${e.name}</strong>
+                        <span>${e.description}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleEthics(id) {
+            const idx = selectedEthics.findIndex(e => e.id === id);
+            if (idx > -1) {
+                selectedEthics.splice(idx, 1);
+            } else {
+                selectedEthics.push(ethicsAreas.find(e => e.id === id));
+            }
+            
+            ethicsAreas.forEach(e => {
+                const card = document.getElementById('ethics-' + e.id);
+                const isSelected = selectedEthics.find(se => se.id === e.id);
+                card.classList.toggle('selected', isSelected);
+                card.querySelector('.checkbox-box').innerHTML = isSelected ? '✓' : '';
+            });
+            updateNavButton();
+        }
+
+        function renderSolutions() {
+            ['technical', 'policy', 'social'].forEach(category => {
+                const containerId = category === 'technical' ? 'techSolutions' : 
+                                    category === 'policy' ? 'policySolutions' : 'socialSolutions';
+                const container = document.getElementById(containerId);
+                container.innerHTML = solutions[category].map(s => 
+                    `<button class="solution-btn" id="sol-${s.id}" title="${s.description}" onclick="toggleSolution(${s.id})">${s.name}</button>`
+                ).join('');
+            });
+        }
+
+        function toggleSolution(id) {
+            const idx = selectedSolutions.findIndex(s => s.id === id);
+            const allSolutions = [...solutions.technical, ...solutions.policy, ...solutions.social];
+            
+            if (idx > -1) {
+                selectedSolutions.splice(idx, 1);
+            } else if (selectedSolutions.length < 4) {
+                selectedSolutions.push(allSolutions.find(s => s.id === id));
+            }
+            
+            allSolutions.forEach(s => {
+                const btn = document.getElementById('sol-' + s.id);
+                const isSelected = selectedSolutions.find(ss => ss.id === s.id);
+                btn.classList.toggle('selected', isSelected);
+                btn.disabled = !isSelected && selectedSolutions.length >= 4;
+            });
+            
+            document.getElementById('solutionCount').textContent = selectedSolutions.length;
+            updateNavButton();
+        }
+
+        function setupTextareaListeners() {
+            document.getElementById('ethicsMotivation').addEventListener('input', function() {
+                document.getElementById('ethicsCharCount').textContent = this.value.length;
+                updateNavButton();
+            });
+            document.getElementById('solutionMotivation').addEventListener('input', function() {
+                document.getElementById('solutionCharCount').textContent = this.value.length;
+                updateNavButton();
+            });
+            document.getElementById('reflection').addEventListener('input', function() {
+                document.getElementById('reflectionCharCount').textContent = this.value.length;
+                updateNavButton();
+            });
+        }
+
+        function canProceed() {
+            switch(currentStep) {
+                case 1: return selectedScenario !== null;
+                case 2: return selectedPerspectives.length >= 2 && 
+                               selectedPerspectives.every(p => (perspectiveAnalysis[p.id] || '').length > 20);
+                case 3: return selectedEthics.length >= 1 && 
+                               document.getElementById('ethicsMotivation').value.length > 30;
+                case 4: return selectedSolutions.length >= 2 && 
+                               document.getElementById('solutionMotivation').value.length > 30;
+                case 5: return document.getElementById('reflection').value.length > 50;
+                default: return true;
+            }
+        }
+
+        function updateNavButton() {
+            const nextBtn = document.getElementById('nextBtn');
+            if (nextBtn) {
+                nextBtn.disabled = !canProceed();
+                nextBtn.textContent = currentStep === 5 ? 'Avsluta →' : 'Nästa →';
+            }
+        }
+
+        function updateProgress() {
+            for (let i = 1; i <= 5; i++) {
+                document.getElementById('prog' + i).classList.toggle('active', i <= currentStep);
+            }
+        }
+
+        function goToStep(step) {
+            document.getElementById('step' + currentStep).classList.add('hidden');
+            currentStep = step;
+            document.getElementById('step' + currentStep).classList.remove('hidden');
+            
+            document.getElementById('progressBar').classList.toggle('hidden', step === 0 || step === 6);
+            document.getElementById('navBar').classList.toggle('hidden', step === 0 || step === 6);
+            
+            if (step === 2) {
+                document.getElementById('selectedScenarioTitle').textContent = selectedScenario.title;
+                updatePerspectiveUI();
+            }
+            
+            if (step === 6) {
+                generateSummary();
+            }
+            
+            updateProgress();
+            updateNavButton();
+        }
+
+        function nextStep() {
+            if (canProceed()) {
+                goToStep(currentStep + 1);
+            }
+        }
+
+        function prevStep() {
+            goToStep(currentStep - 1);
+        }
+
+        function generateSummary() {
+            const date = new Date().toLocaleDateString('sv-SE');
+            const ethicsMotivation = document.getElementById('ethicsMotivation').value;
+            const solutionMotivation = document.getElementById('solutionMotivation').value;
+            const reflection = document.getElementById('reflection').value;
+            
+            let summary = `ALGORITMER & ANSVAR - Individuell reflektion
+Kurs: VAI100 HT25
+Datum: ${date}
+
+═══════════════════════════════════════════════════════
+
+SCENARIO: ${selectedScenario.title}
+Nivå: ${selectedScenario.level}
+
+${selectedScenario.description}
+
+═══════════════════════════════════════════════════════
+
+PERSPEKTIVANALYS:
+
+${selectedPerspectives.map(p => `▸ ${p.name}
+${perspectiveAnalysis[p.id]}`).join('\n\n')}
+
+═══════════════════════════════════════════════════════
+
+IDENTIFIERADE ETIKOMRÅDEN:
+
+${selectedEthics.map(e => `• ${e.name}`).join('\n')}
+
+Motivering:
+${ethicsMotivation}
+
+═══════════════════════════════════════════════════════
+
+FÖRESLAGNA LÖSNINGAR:
+
+${selectedSolutions.map(s => `• ${s.name} (${s.description})`).join('\n')}
+
+Motivering:
+${solutionMotivation}
+
+═══════════════════════════════════════════════════════
+
+SLUTREFLEKTION:
+
+${reflection}
+
+═══════════════════════════════════════════════════════`;
+
+            document.getElementById('summaryText').textContent = summary;
+        }
+
+        function copyToClipboard() {
+            const text = document.getElementById('summaryText').textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = document.getElementById('copyBtn');
+                btn.textContent = '✓ Kopierat!';
+                btn.style.background = '#16a34a';
+                setTimeout(() => {
+                    btn.textContent = '📋 Kopiera till urklipp';
+                    btn.style.background = '#22c55e';
+                }, 2000);
+            });
+        }
+
+        function restart() {
+            selectedScenario = null;
+            selectedPerspectives = [];
+            perspectiveAnalysis = {};
+            selectedEthics = [];
+            selectedSolutions = [];
+            
+            document.querySelectorAll('.card.selected').forEach(c => c.classList.remove('selected'));
+            document.querySelectorAll('.toggle-btn.selected').forEach(b => b.classList.remove('selected'));
+            document.querySelectorAll('.checkbox-card.selected').forEach(c => {
+                c.classList.remove('selected');
+                c.querySelector('.checkbox-box').innerHTML = '';
+            });
+            document.querySelectorAll('.solution-btn.selected').forEach(b => b.classList.remove('selected'));
+            document.querySelectorAll('.solution-btn').forEach(b => b.disabled = false);
+            
+            document.getElementById('ethicsMotivation').value = '';
+            document.getElementById('ethicsCharCount').textContent = '0';
+            document.getElementById('solutionMotivation').value = '';
+            document.getElementById('solutionCharCount').textContent = '0';
+            document.getElementById('reflection').value = '';
+            document.getElementById('reflectionCharCount').textContent = '0';
+            document.getElementById('perspectiveCount').textContent = '0';
+            document.getElementById('solutionCount').textContent = '0';
+            
+            goToStep(0);
+        }
+    </script>
+</body>
+</html>

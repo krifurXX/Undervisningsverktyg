@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALGORITMER & ANSVAR - Ersättningsuppgift VAI100</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f1f5f9;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        #root {
+            min-height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState } = React;
+
+        const scenarios = [
+          {
+            id: 1,
+            level: 'Grundläggande',
+            title: 'Bias i ansökningsprocesser',
+            description: 'En stor högskola använder AI för att sortera tusentals ansökningar. Systemet har tränats på historiska data från tidigare antagna studenter. Efter ett år upptäcker skolan att AI:n systematiskt rangordnar kvinnliga sökande lägre inom tekniska program, trots lika meriter.',
+            suggestedEthics: ['Bias och diskriminering', 'Makt och kontroll']
+          },
+          {
+            id: 2,
+            level: 'Grundläggande',
+            title: 'Miljöpåverkan av AI-träning',
+            description: 'Ett tech-företag tränar en ny språkmodell som konkurrerar med ChatGPT. Träningsprocessen kräver enorma datorcenter som drivs dygnet runt i sex månader och förbrukar lika mycket el som en mindre stad. Samtidigt marknadsför företaget sig som "miljövänligt".',
+            suggestedEthics: ['Miljöpåverkan', 'Makt och kontroll']
+          },
+          {
+            id: 3,
+            level: 'Grundläggande',
+            title: 'AI-genererade fejknyheter',
+            description: 'En AI-bot skapar hundratals falska nyhetsartiklar om en pandemi och sprider dem på Facebook. Artiklarna ser professionella ut med påhittade experter och statistik. Tusentals människor delar innehållet innan plattformen upptäcker bedrägeriet.',
+            suggestedEthics: ['Fejknyheter och desinformation', 'Makt och kontroll']
+          },
+          {
+            id: 4,
+            level: 'Grundläggande',
+            title: 'Fusk med ChatGPT i skolan',
+            description: 'Emma ska skriva en uppsats om klimatförändringar. Hon använder ChatGPT för att generera hela texten, ändrar några meningar och lämnar in som sitt eget arbete. Hennes lärare misstänker inget, men Emma känner sig osäker på vad hon faktiskt lärt sig.',
+            suggestedEthics: ['Akademisk hederlighet', 'Upphovsrätt']
+          },
+          {
+            id: 5,
+            level: 'Grundläggande',
+            title: 'Ansiktsigenkänning i skolor',
+            description: 'En skola installerar kameror med ansiktsigenkänning för att "förbättra säkerheten". Systemet registrerar varje elevs ankomst, rörelser i korridorerna och känslouttryck under lektioner. Föräldrarna fick ingen information om systemet förrän efter installationen.',
+            suggestedEthics: ['Integritet', 'Makt och kontroll', 'Affektigenkänning']
+          },
+          {
+            id: 6,
+            level: 'Komplex',
+            title: 'Datafiering av utbildning',
+            description: 'En lärplattform samlar in detaljerad data om alla elevinteraktioner: vilka sidor de besöker, hur länge de läser, när de pausar, vad de klickar på. Datan säljs till företag som utvecklar "personaliserade" läromedel. Eleverna vet inte att deras beteende kartläggs och säljs.',
+            suggestedEthics: ['Datafiering', 'Integritet', 'Makt och kontroll']
+          },
+          {
+            id: 7,
+            level: 'Komplex',
+            title: 'Övervakning genom affektigenkänning',
+            description: 'En arbetsplats installerar kameror som läser anställdas ansiktsuttryck för att mäta "engagemang" och "produktivitet". AI:n flaggar medarbetare som verkar stressade, trötta eller missnöjda. Denna data används vid löneförhandlingar och uppsägningar.',
+            suggestedEthics: ['Affektigenkänning', 'Integritet', 'Makt och kontroll']
+          },
+          {
+            id: 8,
+            level: 'Komplex',
+            title: 'Politisk manipulation genom deepfakes',
+            description: 'Veckor före ett viktigt val sprids en video på sociala medier som visar en kandidat säga kontroversiella saker. Videon är så övertygande att den delas tusentals gånger innan det avslöjas att det är en AI-genererad deepfake. Skadan på kandidatens rykte är redan skedd.',
+            suggestedEthics: ['Fejknyheter och desinformation', 'Makt och kontroll']
+          },
+          {
+            id: 9,
+            level: 'Komplex',
+            title: 'Upphovsrättstvister vid AI-träning',
+            description: 'Ett AI-företag tränar sin bildgenererande AI på miljontals konstverk från internet utan att fråga konstnärerna. När AI:n börjar generera bilder "i stil med" levande konstnärer stämmer konstnärerna företaget. Företaget hävdar att AI:n bara "lärt sig" som en människa skulle göra.',
+            suggestedEthics: ['Upphovsrätt', 'Mänskligt arbete', 'Makt och kontroll']
+          },
+          {
+            id: 10,
+            level: 'Systemisk',
+            title: 'Exploatering av mänskligt arbete',
+            description: 'För att träna ChatGPT att vara "säker" anställer OpenAI arbetare i Kenya för 2 dollar/timme. De måste läsa och kategorisera extremt våldsamt och traumatiserande innehåll 8 timmar om dagen utan psykologiskt stöd. Företaget marknadsför sin AI som "etisk" medan de utnyttjar billig arbetskraft.',
+            suggestedEthics: ['Mänskligt arbete', 'Makt och kontroll', 'Bias och diskriminering']
+          },
+          {
+            id: 11,
+            level: 'Systemisk',
+            title: 'Framtiden för mänsklig autonomi',
+            description: 'AI-system fattar allt fler beslut åt människor: vad vi ska köpa, vem vi ska träffa, vilka jobb vi ska söka, vilken information vi ska se. Algoritmerna blir så sofistikerade att de vet vad vi vill innan vi själva vet det. Har vi fortfarande fri vilja när AI styr våra val?',
+            suggestedEthics: ['Makt och kontroll', 'Datafiering', 'Integritet']
+          },
+          {
+            id: 12,
+            level: 'Systemisk',
+            title: 'AI som verktyg för förtryck',
+            description: 'En regering använder AI för massövervakning av sin befolkning. Systemet känner igen ansikten, röster och rörelsemönster. Det förutsäger vilka medborgare som kan bli "problematiska" och arresterar dem före eventuella protester. Regeringen kallar det "förebyggande säkerhet".',
+            suggestedEthics: ['Makt och kontroll', 'Integritet', 'Bias och diskriminering']
+          }
+        ];
+
+        const perspectives = [
+          { id: 1, name: 'Studerande', description: 'En person som utbildar sig och påverkas av AI i sin vardag och framtida karriär' },
+          { id: 2, name: 'Lärare', description: 'En utbildare som använder och konfronteras med AI i undervisningen' },
+          { id: 3, name: 'Utvecklare', description: 'En programmerare som skapar AI-system och fattar tekniska beslut' },
+          { id: 4, name: 'Företagsledare', description: 'En beslutsfattare som väger ekonomiska intressen mot etiska överväganden' },
+          { id: 5, name: 'Politiker', description: 'En beslutsfattare som ska reglera och styra AI-utvecklingen' },
+          { id: 6, name: 'Förälder', description: 'En vårdnadshavare som oroar sig för sina barns framtid och säkerhet' },
+          { id: 7, name: 'Konsument', description: 'En användare av AI-tjänster som påverkas av algoritmernas beslut' },
+          { id: 8, name: 'Forskare', description: 'En akademiker som studerar AI:s konsekvenser och möjligheter' },
+          { id: 9, name: 'Journalist', description: 'En granskare som rapporterar om AI:s påverkan på samhället' },
+          { id: 10, name: 'Aktivist', description: 'En samhällsengagerad person som kämpar för rättvis AI' }
+        ];
+
+        const ethicsAreas = [
+          { id: 1, name: 'Bias och diskriminering', description: 'AI-system kan förstärka och sprida orättvisor baserat på kön, etnicitet, ålder etc.' },
+          { id: 2, name: 'Miljöpåverkan', description: 'AI-träning och drift kräver enorma mängder energi och resurser' },
+          { id: 3, name: 'Fejknyheter och desinformation', description: 'AI kan skapa och sprida falsk information i stor skala' },
+          { id: 4, name: 'Akademisk hederlighet', description: 'AI utmanar traditionella syner på lärande, originalitet och examination' },
+          { id: 5, name: 'Upphovsrätt', description: 'Vem äger AI-genererat innehåll? Hur hanteras träningsdata?' },
+          { id: 6, name: 'Integritet', description: 'AI-system samlar och analyserar personlig data i stor utsträckning' },
+          { id: 7, name: 'Datafiering', description: 'Att göra allt till mätbar data, även mänskliga beteenden och relationer' },
+          { id: 8, name: 'Affektigenkänning', description: 'AI som läser och tolkar mänskliga känslor och ansiktsuttryck' },
+          { id: 9, name: 'Mänskligt arbete', description: 'AI:s påverkan på jobb, arbetsvillkor och exploatering av arbetare' },
+          { id: 10, name: 'Makt och kontroll', description: 'Vem har makten över AI-system och vem påverkas av dem?' }
+        ];
+
+        const solutions = {
+          technical: [
+            { id: 1, name: 'Transparenta AI-algoritmer', description: 'Förklara hur AI fattar beslut' },
+            { id: 2, name: 'Diversifierade träningsdata', description: 'Inkludera fler perspektiv i data' },
+            { id: 3, name: 'Kryptering och datasäkerhet', description: 'Skydda personlig information' },
+            { id: 4, name: 'Användarkontroll över automation', description: 'Låt människor välja när AI används' },
+            { id: 5, name: 'Bias-detektering', description: 'Testa AI-system för orättvisor' },
+            { id: 6, name: 'Energieffektiv AI', description: 'Minska miljöpåverkan av datorcenter' },
+            { id: 7, name: 'Öppen källkod', description: 'Dela AI-kod för granskning' },
+            { id: 8, name: 'Människor-i-loopen design', description: 'Håll människor i besluten' }
+          ],
+          policy: [
+            { id: 9, name: 'Regeringsreglering', description: 'Lagar som styr AI-användning' },
+            { id: 10, name: 'Branschstandarder', description: 'Företag enas om etiska regler' },
+            { id: 11, name: 'Etiska riktlinjer', description: 'Vägledning för ansvarsfull utveckling' },
+            { id: 12, name: 'Konsumentskydd', description: 'Lagar som skyddar användare' },
+            { id: 13, name: 'Transparenskrav', description: 'Krav på öppenhet om AI-system' },
+            { id: 14, name: 'Dataskyddslagar', description: 'Regler för personuppgifter' },
+            { id: 15, name: 'AI-auditering', description: 'Oberoende granskning av AI-system' },
+            { id: 16, name: 'Internationella avtal', description: 'Globalt samarbete om AI-etik' }
+          ],
+          social: [
+            { id: 17, name: 'Utbildning och medvetenhet', description: 'Lär människor om AI:s påverkan' },
+            { id: 18, name: 'Offentlig debatt', description: 'Diskutera AI:s roll i samhället' },
+            { id: 19, name: 'Aktivism och påtryckningar', description: 'Organisera för förändring' },
+            { id: 20, name: 'Etisk design-principer', description: 'Bygga värderingar i utvecklingen' },
+            { id: 21, name: 'Mångfald i utvecklingsteam', description: 'Olika perspektiv skapar bättre AI' },
+            { id: 22, name: 'Community-engagement', description: 'Involvera berörda grupper' },
+            { id: 23, name: 'Mediekritik', description: 'Granska AI-företags påståenden' },
+            { id: 24, name: 'Kollektiv handling', description: 'Gemensam kamp för rättvis AI' }
+          ]
+        };
+
+        function AIEtikSpel() {
+          const [step, setStep] = useState(0);
+          const [selectedScenario, setSelectedScenario] = useState(null);
+          const [selectedPerspectives, setSelectedPerspectives] = useState([]);
+          const [perspectiveAnalysis, setPerspectiveAnalysis] = useState({});
+          const [selectedEthics, setSelectedEthics] = useState([]);
+          const [ethicsMotivation, setEthicsMotivation] = useState('');
+          const [selectedSolutions, setSelectedSolutions] = useState([]);
+          const [solutionMotivation, setSolutionMotivation] = useState('');
+          const [reflection, setReflection] = useState('');
+          const [copied, setCopied] = useState(false);
+
+          const getLevelColor = (level) => {
+            switch(level) {
+              case 'Grundläggande': return '#3b82f6';
+              case 'Komplex': return '#f59e0b';
+              case 'Systemisk': return '#dc2626';
+              default: return '#6b7280';
+            }
+          };
+
+          const togglePerspective = (p) => {
+            if (selectedPerspectives.find(sp => sp.id === p.id)) {
+              setSelectedPerspectives(selectedPerspectives.filter(sp => sp.id !== p.id));
+              const newAnalysis = {...perspectiveAnalysis};
+              delete newAnalysis[p.id];
+              setPerspectiveAnalysis(newAnalysis);
+            } else if (selectedPerspectives.length < 3) {
+              setSelectedPerspectives([...selectedPerspectives, p]);
+            }
+          };
+
+          const toggleEthics = (e) => {
+            if (selectedEthics.find(se => se.id === e.id)) {
+              setSelectedEthics(selectedEthics.filter(se => se.id !== e.id));
+            } else {
+              setSelectedEthics([...selectedEthics, e]);
+            }
+          };
+
+          const toggleSolution = (s) => {
+            if (selectedSolutions.find(ss => ss.id === s.id)) {
+              setSelectedSolutions(selectedSolutions.filter(ss => ss.id !== s.id));
+            } else if (selectedSolutions.length < 4) {
+              setSelectedSolutions([...selectedSolutions, s]);
+            }
+          };
+
+          const canProceed = () => {
+            switch(step) {
+              case 1: return selectedScenario !== null;
+              case 2: return selectedPerspectives.length >= 2 && selectedPerspectives.every(p => perspectiveAnalysis[p.id]?.length > 20);
+              case 3: return selectedEthics.length >= 1 && ethicsMotivation.length > 30;
+              case 4: return selectedSolutions.length >= 2 && solutionMotivation.length > 30;
+              case 5: return reflection.length > 50;
+              default: return true;
+            }
+          };
+
+          const generateSummary = () => {
+            return `ALGORITMER & ANSVAR - Individuell reflektion
+Kurs: VAI100 HT25
+Datum: ${new Date().toLocaleDateString('sv-SE')}
+
+═══════════════════════════════════════════════════════
+
+SCENARIO: ${selectedScenario?.title}
+Nivå: ${selectedScenario?.level}
+
+${selectedScenario?.description}
+
+═══════════════════════════════════════════════════════
+
+PERSPEKTIVANALYS:
+
+${selectedPerspectives.map(p => `▸ ${p.name}
+${perspectiveAnalysis[p.id]}`).join('\n\n')}
+
+═══════════════════════════════════════════════════════
+
+IDENTIFIERADE ETIKOMRÅDEN:
+
+${selectedEthics.map(e => `• ${e.name}`).join('\n')}
+
+Motivering:
+${ethicsMotivation}
+
+═══════════════════════════════════════════════════════
+
+FÖRESLAGNA LÖSNINGAR:
+
+${selectedSolutions.map(s => `• ${s.name} (${s.description})`).join('\n')}
+
+Motivering:
+${solutionMotivation}
+
+═══════════════════════════════════════════════════════
+
+SLUTREFLEKTION:
+
+${reflection}
+
+═══════════════════════════════════════════════════════`;
+          };
+
+          const copyToClipboard = () => {
+            navigator.clipboard.writeText(generateSummary());
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+          };
+
+          const renderStep = () => {
+            switch(step) {
+              case 0:
+                return (
+                  <div style={{textAlign: 'center', padding: '20px'}}>
+                    <div style={{fontSize: '64px', marginBottom: '20px'}}>🎴</div>
+                    <h1 style={{fontSize: '28px', fontWeight: '600', color: '#1e293b', marginBottom: '8px', fontFamily: 'Georgia, serif'}}>
+                      ALGORITMER & ANSVAR
+                    </h1>
+                    <p style={{fontSize: '16px', color: '#64748b', marginBottom: '32px'}}>
+                      Ett individuellt reflektionsverktyg för AI-etik
+                    </p>
+                    
+                    <div style={{background: '#f8fafc', borderRadius: '12px', padding: '24px', marginBottom: '24px', textAlign: 'left', border: '1px solid #e2e8f0'}}>
+                      <h3 style={{fontSize: '16px', fontWeight: '600', color: '#334155', marginBottom: '16px'}}>
+                        Instruktioner
+                      </h3>
+                      <p style={{color: '#475569', lineHeight: '1.7', marginBottom: '16px'}}>
+                        Detta är en ersättningsuppgift för workshopmomentet med etikspelet. Du kommer att arbeta igenom samma reflektionsprocess som dina kurskamrater gjorde i grupp, men självständigt och dokumenterat.
+                      </p>
+                      <div style={{background: 'white', borderRadius: '8px', padding: '16px', border: '1px solid #e2e8f0'}}>
+                        <p style={{fontWeight: '500', color: '#334155', marginBottom: '8px'}}>Du kommer att:</p>
+                        <ol style={{color: '#475569', paddingLeft: '20px', margin: 0, lineHeight: '1.8'}}>
+                          <li>Välja ett etiskt dilemma (scenariokort)</li>
+                          <li>Analysera det från olika intressenters perspektiv</li>
+                          <li>Identifiera relevanta etikområden</li>
+                          <li>Föreslå möjliga lösningar</li>
+                          <li>Reflektera över dina insikter</li>
+                        </ol>
+                      </div>
+                    </div>
+
+                    <div style={{background: '#fef3c7', borderRadius: '8px', padding: '16px', marginBottom: '24px', textAlign: 'left'}}>
+                      <p style={{color: '#92400e', fontSize: '14px', margin: 0}}>
+                        <strong>Tips:</strong> Ta god tid på dig. Kvaliteten på din analys är viktigare än att gå snabbt igenom stegen. I slutet kan du kopiera din sammanfattning för inlämning.
+                      </p>
+                    </div>
+
+                    <button 
+                      onClick={() => setStep(1)}
+                      style={{
+                        background: '#2563eb',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '8px',
+                        padding: '14px 32px',
+                        fontSize: '16px',
+                        fontWeight: '500',
+                        cursor: 'pointer',
+                        transition: 'background 0.2s'
+                      }}
+                      onMouseOver={(e) => e.target.style.background = '#1d4ed8'}
+                      onMouseOut={(e) => e.target.style.background = '#2563eb'}
+                    >
+                      Starta uppgiften →
+                    </button>
+                  </div>
+                );
+
+              case 1:
+                return (
+                  <div>
+                    <div style={{marginBottom: '24px'}}>
+                      <span style={{background: '#dbeafe', color: '#1e40af', padding: '4px 12px', borderRadius: '16px', fontSize: '12px', fontWeight: '500'}}>STEG 1 av 5</span>
+                      <h2 style={{fontSize: '22px', fontWeight: '600', color: '#1e293b', marginTop: '12px', marginBottom: '8px'}}>Välj ett scenario</h2>
+                      <p style={{color: '#64748b'}}>Läs igenom de olika scenarierna och välj ett som du vill analysera djupare.</p>
+                    </div>
+
+                    <div style={{display: 'grid', gap: '12px'}}>
+                      {scenarios.map(scenario => (
+                        <div 
+                          key={scenario.id}
+                          onClick={() => setSelectedScenario(scenario)}
+                          style={{
+                            background: selectedScenario?.id === scenario.id ? '#eff6ff' : 'white',
+                            border: selectedScenario?.id === scenario.id ? '2px solid #2563eb' : '1px solid #e2e8f0',
+                            borderRadius: '10px',
+                            padding: '16px',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s'
+                          }}
+                        >
+                          <div style={{display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px'}}>
+                            <span style={{
+                              background: getLevelColor(scenario.level),
+                              color: 'white',
+                              padding: '2px 10px',
+                              borderRadius: '12px',
+                              fontSize: '11px',
+                              fontWeight: '500'
+                            }}>
+                              {scenario.level}
+                            </span>
+                            <h3 style={{fontSize: '15px', fontWeight: '600', color: '#1e293b', margin: 0}}>{scenario.title}</h3>
+                          </div>
+                          <p style={{color: '#475569', fontSize: '14px', lineHeight: '1.6', margin: 0}}>{scenario.description}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+
+              case 2:
+                return (
+                  <div>
+                    <div style={{marginBottom: '24px'}}>
+                      <span style={{background: '#dcfce7', color: '#166534', padding: '4px 12px', borderRadius: '16px', fontSize: '12px', fontWeight: '500'}}>STEG 2 av 5</span>
+                      <h2 style={{fontSize: '22px', fontWeight: '600', color: '#1e293b', marginTop: '12px', marginBottom: '8px'}}>Perspektivanalys</h2>
+                      <p style={{color: '#64748b'}}>Välj 2-3 perspektiv och analysera scenariot från varje intressents synvinkel.</p>
+                    </div>
+
+                    <div style={{background: '#f0fdf4', borderRadius: '10px', padding: '16px', marginBottom: '20px', border: '1px solid #bbf7d0'}}>
+                      <p style={{fontWeight: '500', color: '#166534', marginBottom: '4px'}}>Ditt scenario:</p>
+                      <p style={{color: '#15803d', fontSize: '14px', margin: 0}}>{selectedScenario?.title}</p>
+                    </div>
+
+                    <p style={{fontWeight: '500', color: '#334155', marginBottom: '12px'}}>
+                      Välj 2-3 perspektiv ({selectedPerspectives.length}/3 valda):
+                    </p>
+
+                    <div style={{display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '24px'}}>
+                      {perspectives.map(p => (
+                        <button
+                          key={p.id}
+                          onClick={() => togglePerspective(p)}
+                          style={{
+                            background: selectedPerspectives.find(sp => sp.id === p.id) ? '#22c55e' : 'white',
+                            color: selectedPerspectives.find(sp => sp.id === p.id) ? 'white' : '#374151',
+                            border: '1px solid #d1d5db',
+                            borderRadius: '20px',
+                            padding: '8px 16px',
+                            fontSize: '13px',
+                            cursor: selectedPerspectives.length >= 3 && !selectedPerspectives.find(sp => sp.id === p.id) ? 'not-allowed' : 'pointer',
+                            opacity: selectedPerspectives.length >= 3 && !selectedPerspectives.find(sp => sp.id === p.id) ? 0.5 : 1,
+                            transition: 'all 0.2s'
+                          }}
+                        >
+                          {p.name}
+                        </button>
+                      ))}
+                    </div>
+
+                    {selectedPerspectives.map(p => (
+                      <div key={p.id} style={{marginBottom: '20px'}}>
+                        <label style={{display: 'block', fontWeight: '500', color: '#1e293b', marginBottom: '8px'}}>
+                          {p.name}: {p.description}
+                        </label>
+                        <textarea
+                          value={perspectiveAnalysis[p.id] || ''}
+                          onChange={(e) => setPerspectiveAnalysis({...perspectiveAnalysis, [p.id]: e.target.value})}
+                          placeholder={`Hur ser ${p.name.toLowerCase()} på detta scenario? Vilka intressen har de? Hur påverkas de?`}
+                          style={{
+                            width: '100%',
+                            minHeight: '100px',
+                            padding: '12px',
+                            border: '1px solid #d1d5db',
+                            borderRadius: '8px',
+                            fontSize: '14px',
+                            lineHeight: '1.6',
+                            resize: 'vertical',
+                            boxSizing: 'border-box'
+                          }}
+                        />
+                        <p style={{fontSize: '12px', color: '#9ca3af', marginTop: '4px'}}>
+                          {perspectiveAnalysis[p.id]?.length || 0} tecken (minst 20 krävs)
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                );
+
+              case 3:
+                return (
+                  <div>
+                    <div style={{marginBottom: '24px'}}>
+                      <span style={{background: '#fee2e2', color: '#991b1b', padding: '4px 12px', borderRadius: '16px', fontSize: '12px', fontWeight: '500'}}>STEG 3 av 5</span>
+                      <h2 style={{fontSize: '22px', fontWeight: '600', color: '#1e293b', marginTop: '12px', marginBottom: '8px'}}>Identifiera etikområden</h2>
+                      <p style={{color: '#64748b'}}>Vilka etiska aspekter är mest relevanta för detta scenario?</p>
+                    </div>
+
+                    <p style={{fontWeight: '500', color: '#334155', marginBottom: '12px'}}>
+                      Välj de etikområden du anser vara mest relevanta:
+                    </p>
+
+                    <div style={{display: 'grid', gap: '8px', marginBottom: '24px'}}>
+                      {ethicsAreas.map(e => (
+                        <div
+                          key={e.id}
+                          onClick={() => toggleEthics(e)}
+                          style={{
+                            background: selectedEthics.find(se => se.id === e.id) ? '#fef2f2' : 'white',
+                            border: selectedEthics.find(se => se.id === e.id) ? '2px solid #dc2626' : '1px solid #e2e8f0',
+                            borderRadius: '8px',
+                            padding: '12px 16px',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s'
+                          }}
+                        >
+                          <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
+                            <div style={{
+                              width: '20px',
+                              height: '20px',
+                              borderRadius: '4px',
+                              border: selectedEthics.find(se => se.id === e.id) ? 'none' : '2px solid #d1d5db',
+                              background: selectedEthics.find(se => se.id === e.id) ? '#dc2626' : 'white',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              color: 'white',
+                              fontSize: '14px',
+                              flexShrink: 0
+                            }}>
+                              {selectedEthics.find(se => se.id === e.id) && '✓'}
+                            </div>
+                            <div>
+                              <p style={{fontWeight: '500', color: '#1e293b', margin: 0, fontSize: '14px'}}>{e.name}</p>
+                              <p style={{color: '#6b7280', margin: 0, fontSize: '12px'}}>{e.description}</p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div>
+                      <label style={{display: 'block', fontWeight: '500', color: '#1e293b', marginBottom: '8px'}}>
+                        Motivera ditt val av etikområden:
+                      </label>
+                      <textarea
+                        value={ethicsMotivation}
+                        onChange={(e) => setEthicsMotivation(e.target.value)}
+                        placeholder="Förklara varför du valde dessa etikområden och hur de relaterar till scenariot..."
+                        style={{
+                          width: '100%',
+                          minHeight: '120px',
+                          padding: '12px',
+                          border: '1px solid #d1d5db',
+                          borderRadius: '8px',
+                          fontSize: '14px',
+                          lineHeight: '1.6',
+                          resize: 'vertical',
+                          boxSizing: 'border-box'
+                        }}
+                      />
+                      <p style={{fontSize: '12px', color: '#9ca3af', marginTop: '4px'}}>
+                        {ethicsMotivation.length} tecken (minst 30 krävs)
+                      </p>
+                    </div>
+                  </div>
+                );
+
+              case 4:
+                return (
+                  <div>
+                    <div style={{marginBottom: '24px'}}>
+                      <span style={{background: '#fef9c3', color: '#854d0e', padding: '4px 12px', borderRadius: '16px', fontSize: '12px', fontWeight: '500'}}>STEG 4 av 5</span>
+                      <h2 style={{fontSize: '22px', fontWeight: '600', color: '#1e293b', marginTop: '12px', marginBottom: '8px'}}>Föreslå lösningar</h2>
+                      <p style={{color: '#64748b'}}>Välj 2-4 lösningar som du tror kan hantera de etiska problemen i scenariot.</p>
+                    </div>
+
+                    {['technical', 'policy', 'social'].map((category) => (
+                      <div key={category} style={{marginBottom: '20px'}}>
+                        <h3 style={{
+                          fontSize: '14px',
+                          fontWeight: '600',
+                          color: category === 'technical' ? '#0369a1' : category === 'policy' ? '#7c2d12' : '#166534',
+                          marginBottom: '10px',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.5px'
+                        }}>
+                          {category === 'technical' ? '⚙️ Tekniska lösningar' : category === 'policy' ? '📋 Policylösningar' : '👥 Sociala lösningar'}
+                        </h3>
+                        <div style={{display: 'flex', flexWrap: 'wrap', gap: '8px'}}>
+                          {solutions[category].map(s => (
+                            <button
+                              key={s.id}
+                              onClick={() => toggleSolution(s)}
+                              title={s.description}
+                              style={{
+                                background: selectedSolutions.find(ss => ss.id === s.id) ? '#fbbf24' : 'white',
+                                color: selectedSolutions.find(ss => ss.id === s.id) ? '#1e293b' : '#374151',
+                                border: '1px solid #d1d5db',
+                                borderRadius: '6px',
+                                padding: '6px 12px',
+                                fontSize: '13px',
+                                cursor: selectedSolutions.length >= 4 && !selectedSolutions.find(ss => ss.id === s.id) ? 'not-allowed' : 'pointer',
+                                opacity: selectedSolutions.length >= 4 && !selectedSolutions.find(ss => ss.id === s.id) ? 0.5 : 1,
+                                transition: 'all 0.2s'
+                              }}
+                            >
+                              {s.name}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+
+                    <p style={{fontSize: '13px', color: '#6b7280', marginBottom: '16px'}}>
+                      Valda lösningar: {selectedSolutions.length}/4
+                    </p>
+
+                    <div>
+                      <label style={{display: 'block', fontWeight: '500', color: '#1e293b', marginBottom: '8px'}}>
+                        Motivera ditt val av lösningar:
+                      </label>
+                      <textarea
+                        value={solutionMotivation}
+                        onChange={(e) => setSolutionMotivation(e.target.value)}
+                        placeholder="Förklara hur dessa lösningar kan hantera de etiska problemen i scenariot. Vilka lösningar kompletterar varandra?"
+                        style={{
+                          width: '100%',
+                          minHeight: '120px',
+                          padding: '12px',
+                          border: '1px solid #d1d5db',
+                          borderRadius: '8px',
+                          fontSize: '14px',
+                          lineHeight: '1.6',
+                          resize: 'vertical',
+                          boxSizing: 'border-box'
+                        }}
+                      />
+                      <p style={{fontSize: '12px', color: '#9ca3af', marginTop: '4px'}}>
+                        {solutionMotivation.length} tecken (minst 30 krävs)
+                      </p>
+                    </div>
+                  </div>
+                );
+
+              case 5:
+                return (
+                  <div>
+                    <div style={{marginBottom: '24px'}}>
+                      <span style={{background: '#f3e8ff', color: '#6b21a8', padding: '4px 12px', borderRadius: '16px', fontSize: '12px', fontWeight: '500'}}>STEG 5 av 5</span>
+                      <h2 style={{fontSize: '22px', fontWeight: '600', color: '#1e293b', marginTop: '12px', marginBottom: '8px'}}>Slutreflektion</h2>
+                      <p style={{color: '#64748b'}}>Sammanfatta dina viktigaste insikter från denna analys.</p>
+                    </div>
+
+                    <div style={{background: '#faf5ff', borderRadius: '10px', padding: '16px', marginBottom: '20px', border: '1px solid #e9d5ff'}}>
+                      <p style={{fontWeight: '500', color: '#6b21a8', marginBottom: '8px'}}>Reflektera över:</p>
+                      <ul style={{color: '#7c3aed', paddingLeft: '20px', margin: 0, fontSize: '14px', lineHeight: '1.8'}}>
+                        <li>Vilka intressekonflikter upptäckte du mellan olika perspektiv?</li>
+                        <li>Hur hänger de etiska problemen ihop med varandra?</li>
+                        <li>Vilka utmaningar finns med de lösningar du föreslagit?</li>
+                        <li>Vad tar du med dig från denna analys?</li>
+                      </ul>
+                    </div>
+
+                    <div>
+                      <textarea
+                        value={reflection}
+                        onChange={(e) => setReflection(e.target.value)}
+                        placeholder="Skriv din reflektion här..."
+                        style={{
+                          width: '100%',
+                          minHeight: '200px',
+                          padding: '16px',
+                          border: '1px solid #d1d5db',
+                          borderRadius: '8px',
+                          fontSize: '14px',
+                          lineHeight: '1.7',
+                          resize: 'vertical',
+                          boxSizing: 'border-box'
+                        }}
+                      />
+                      <p style={{fontSize: '12px', color: '#9ca3af', marginTop: '4px'}}>
+                        {reflection.length} tecken (minst 50 krävs)
+                      </p>
+                    </div>
+                  </div>
+                );
+
+              case 6:
+                return (
+                  <div style={{textAlign: 'center'}}>
+                    <div style={{fontSize: '48px', marginBottom: '16px'}}>✅</div>
+                    <h2 style={{fontSize: '24px', fontWeight: '600', color: '#1e293b', marginBottom: '8px'}}>Uppgiften är klar!</h2>
+                    <p style={{color: '#64748b', marginBottom: '24px'}}>
+                      Nedan ser du en sammanfattning av din analys. Kopiera texten och lämna in enligt kursens instruktioner.
+                    </p>
+
+                    <div style={{
+                      background: '#f8fafc',
+                      border: '1px solid #e2e8f0',
+                      borderRadius: '10px',
+                      padding: '20px',
+                      marginBottom: '20px',
+                      textAlign: 'left',
+                      maxHeight: '400px',
+                      overflow: 'auto'
+                    }}>
+                      <pre style={{
+                        fontFamily: 'monospace',
+                        fontSize: '12px',
+                        whiteSpace: 'pre-wrap',
+                        color: '#334155',
+                        margin: 0,
+                        lineHeight: '1.6'
+                      }}>
+                        {generateSummary()}
+                      </pre>
+                    </div>
+
+                    <button
+                      onClick={copyToClipboard}
+                      style={{
+                        background: copied ? '#16a34a' : '#22c55e',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '8px',
+                        padding: '14px 32px',
+                        fontSize: '16px',
+                        fontWeight: '500',
+                        cursor: 'pointer',
+                        marginRight: '12px'
+                      }}
+                    >
+                      {copied ? '✓ Kopierat!' : '📋 Kopiera till urklipp'}
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setStep(0);
+                        setSelectedScenario(null);
+                        setSelectedPerspectives([]);
+                        setPerspectiveAnalysis({});
+                        setSelectedEthics([]);
+                        setEthicsMotivation('');
+                        setSelectedSolutions([]);
+                        setSolutionMotivation('');
+                        setReflection('');
+                      }}
+                      style={{
+                        background: 'white',
+                        color: '#374151',
+                        border: '1px solid #d1d5db',
+                        borderRadius: '8px',
+                        padding: '14px 24px',
+                        fontSize: '16px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Börja om
+                    </button>
+                  </div>
+                );
+
+              default:
+                return null;
+            }
+          };
+
+          return (
+            <div style={{
+              fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+              maxWidth: '720px',
+              margin: '0 auto',
+              padding: '24px',
+              background: 'white',
+              minHeight: '100vh'
+            }}>
+              {step > 0 && step < 6 && (
+                <div style={{marginBottom: '20px'}}>
+                  <div style={{display: 'flex', gap: '4px', marginBottom: '8px'}}>
+                    {[1,2,3,4,5].map(s => (
+                      <div key={s} style={{
+                        flex: 1,
+                        height: '4px',
+                        borderRadius: '2px',
+                        background: s <= step ? '#2563eb' : '#e2e8f0'
+                      }} />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {renderStep()}
+
+              {step > 0 && step < 6 && (
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  marginTop: '32px',
+                  paddingTop: '20px',
+                  borderTop: '1px solid #e2e8f0'
+                }}>
+                  <button
+                    onClick={() => setStep(step - 1)}
+                    style={{
+                      background: 'white',
+                      color: '#374151',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '8px',
+                      padding: '10px 20px',
+                      fontSize: '14px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    ← Tillbaka
+                  </button>
+                  <button
+                    onClick={() => setStep(step + 1)}
+                    disabled={!canProceed()}
+                    style={{
+                      background: canProceed() ? '#2563eb' : '#94a3b8',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '8px',
+                      padding: '10px 24px',
+                      fontSize: '14px',
+                      cursor: canProceed() ? 'pointer' : 'not-allowed'
+                    }}
+                  >
+                    {step === 5 ? 'Avsluta' : 'Nästa'} →
+                  </button>
+                </div>
+              )}
+            </div>
+          );
+        }
+
+        ReactDOM.render(<AIEtikSpel />, document.getElementById('root'));
+    </script>
+</body>
+</html>
